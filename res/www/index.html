@@ -26,85 +26,19 @@
         <meta name="msapplication-tap-highlight" content="no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+        <meta http-equiv="Content-Security-Policy" content="default-src * gap:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <link rel="stylesheet" type="text/css" href="css/buttons.css" />
         <title>PhoneGap Day Wikitude AR Demo</title>
     </head>
     <body>
         <div class="app">
-            <h1>Augmented Reality</h1>
-            <p class="subtext">Powered by Wikitude</p>
-            <p>Press this button and point your phone to a PhoneGap Day T-Shirt</p>
-                <a href="#" id="launch-demo" class="button button-action button-rounded">Fun happy demo time!</a>
+            <h1>Fesse Augmented Reality</h1>
+            <p class="subtext">Powered by Fessitude</p>
+            <p>Press this fesse</p>
+                <a href="https://fr.wikipedia.org/wiki/Fesse" id="launch-demo" class="button button-action button-rounded">Fesse demo time!</a>
         </div>
         <script type="text/javascript" src="cordova.js"></script>
-<script type="text/javascript">
-//
-// Go to app's homepage on a three-finger tap.
-//
-(function() {
-
-    var currentTouches = {},
-        eventName = { touchstart: 'touchstart', touchend: 'touchend' };
-
-    if (window.navigator.msPointerEnabled) {
-        eventName = { touchstart: 'MSPointerDown', touchend: 'MSPointerUp' };
-    }
-
-    document.addEventListener(eventName.touchstart, function(evt) {
-        var touches = evt.touches || [evt],
-            touch;
-        for(var i = 0, l = touches.length; i < l; i++) {
-            touch = touches[i];
-            currentTouches[touch.identifier || touch.pointerId] = touch;
-        }
-    }, false);
-
-    document.addEventListener(eventName.touchend, function(evt) {
-        var touchCount = Object.keys(currentTouches).length;
-        currentTouches = {};
-        if (touchCount === 3) {
-            evt.preventDefault();
-            window.history.back(window.history.length);
-        }
-    }, false);
-
-})(window);
-</script>
-<script type="text/javascript">
-//
-// Refresh the app on a four-finger tap.
-//
-(function() {
-
-    var currentTouches = {},
-        eventName = { touchstart: 'touchstart', touchend: 'touchend' };
-
-    if (window.navigator.msPointerEnabled) {
-        eventName = { touchstart: 'MSPointerDown', touchend: 'MSPointerUp' };
-    }
-
-    document.addEventListener(eventName.touchstart, function(evt) {
-        var touches = evt.touches || [evt],
-            touch;
-        for(var i = 0, l = touches.length; i < l; i++) {
-            touch = touches[i];
-            currentTouches[touch.identifier || touch.pointerId] = touch;
-        }
-    });
-
-    document.addEventListener(eventName.touchend, function(evt) {
-        var touchCount = Object.keys(currentTouches).length;
-        currentTouches = {};
-        if (touchCount === 4) {
-            evt.preventDefault();
-            window.location.reload(true);
-        }
-    }, false);
-
-})(window);
-</script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
             app.initialize();
