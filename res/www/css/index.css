@@ -38,7 +38,6 @@ body {
 
 /* Portrait layout (default) */
 .app {
-    background:url(../img/tshirt_samurai.png) no-repeat center top; /* 180 x 225 */
     position:absolute;             /* position in the center of the screen */
     left:50%;
     top:50%;
