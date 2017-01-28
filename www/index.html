@@ -28,6 +28,16 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <!--<meta http-equiv="Content-Security-Policy" content="default-src * gap:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com">
         -->
+
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: gap: https://ssl.gstatic.com; style-src 'self'; media-src *"> -->
+
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'"> -->
+
+        <!-- Allow everything but only from the same origin and foo.com -->
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://maps.googleapis.com"> -->
+
+        <!-- Allows XHRs only over HTTPS on the same domain. -->
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https:"> -->
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <link rel="stylesheet" type="text/css" href="css/buttons.css" />
         <title>PhoneGap Day Wikitude AR Demo</title>
@@ -39,33 +49,125 @@
             google.maps.event.addDomListener(window, 'load', init);
 
             function init() {
-                // Basic options for a simple Google Map
-                // For more options see: https://developers.google.com/maps/documentation/javascript/reference#MapOptions
-                var mapOptions = {
-                    // How zoomed in you want the map to start at (always required)
-                    zoom: 17,
 
-                    // The latitude and longitude to center the map (always required)
-                    center: new google.maps.LatLng(48.693602, 6.180374), // New York
 
-                    // How you would like to style the map.
-                    // This is where you would paste any style found on Snazzy Maps.
-                    styles: [{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#7f2200"},{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"color":"#87ae79"}]},{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#495421"}]},{"featureType":"administrative","elementType":"labels.text.stroke","stylers":[{"color":"#ffffff"},{"visibility":"on"},{"weight":4.1}]},{"featureType":"administrative.neighborhood","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"color":"#abce83"}]},{"featureType":"landscape.man_made","elementType":"geometry.fill","stylers":[{"visibility":"off"}]},{"featureType":"landscape.man_made","elementType":"geometry.stroke","stylers":[{"lightness":"25"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"color":"#97b771"}]},{"featureType":"poi","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#7B8758"}]},{"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#EBF4A4"}]},{"featureType":"poi.attraction","elementType":"labels","stylers":[{"visibility":"on"}]},{"featureType":"poi.business","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"poi.government","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"visibility":"simplified"},{"color":"#8dab68"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"visibility":"simplified"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#5B5B3F"}]},{"featureType":"road","elementType":"labels.text.stroke","stylers":[{"color":"#ABCE83"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#EBF4A4"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#9BBF72"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#A4C67D"}]},{"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"geometry","stylers":[{"visibility":"on"},{"color":"#aee2e0"}]}]
-                };
+var Latitude = undefined;
+var Longitude = undefined;
 
-                // Get the HTML DOM element that will contain your map
-                // We are using a div with id="map" seen below in the <body>
-                var mapElement = document.getElementById('map');
+// Get geo coordinates
 
-                // Create the Google Map using our element and options defined above
-                var map = new google.maps.Map(mapElement, mapOptions);
+function getMapLocation() {
 
-                // Let's also add a marker while we're at it
-                var marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(48.693602, 6.180374),
-                    map: map,
-                    title: 'Snazzy!'
-                });
+    navigator.geolocation.getCurrentPosition
+    (onMapSuccess, onMapError, { enableHighAccuracy: true });
+}
+
+// Success callback for get geo coordinates
+
+var onMapSuccess = function (position) {
+
+    Latitude = position.coords.latitude;
+    Longitude = position.coords.longitude;
+
+    getMap(Latitude, Longitude);
+
+}
+
+// Get map by using coordinates
+
+function getMap(latitude, longitude) {
+
+    var mapOptions = {
+        center: new google.maps.LatLng(0, 0),
+        zoom: 1,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    map = new google.maps.Map
+    (document.getElementById("map"), mapOptions);
+
+
+    var latLong = new google.maps.LatLng(latitude, longitude);
+
+    var marker = new google.maps.Marker({
+        position: latLong
+    });
+
+    marker.setMap(map);
+    map.setZoom(15);
+    map.setCenter(marker.getPosition());
+}
+
+// Success callback for watching your changing position
+
+var onMapWatchSuccess = function (position) {
+
+    var updatedLatitude = position.coords.latitude;
+    var updatedLongitude = position.coords.longitude;
+
+    if (updatedLatitude != Latitude && updatedLongitude != Longitude) {
+
+        Latitude = updatedLatitude;
+        Longitude = updatedLongitude;
+
+        getMap(updatedLatitude, updatedLongitude);
+    }
+}
+
+// Error callback
+
+function onMapError(error) {
+    console.log('code: ' + error.code + '\n' +
+        'message: ' + error.message + '\n');
+}
+
+// Watch your changing position
+
+function watchMapPosition() {
+
+    return navigator.geolocation.watchPosition
+    (onMapWatchSuccess, onMapError, { enableHighAccuracy: true });
+}
+
+getMapLocation();
+
+                // var onSuccess = function(position) {
+                //
+                //     // Basic options for a simple Google Map
+                //     // For more options see: https://developers.google.com/maps/documentation/javascript/reference#MapOptions
+                //     var mapOptions = {
+                //         // How zoomed in you want the map to start at (always required)
+                //         zoom: 17,
+                //
+                //         // The latitude and longitude to center the map (always required)
+                //         center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude), // New York
+                //
+                //         // How you would like to style the map.
+                //         // This is where you would paste any style found on Snazzy Maps.
+                //         styles: [{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#7f2200"},{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"color":"#87ae79"}]},{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#495421"}]},{"featureType":"administrative","elementType":"labels.text.stroke","stylers":[{"color":"#ffffff"},{"visibility":"on"},{"weight":4.1}]},{"featureType":"administrative.neighborhood","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"color":"#abce83"}]},{"featureType":"landscape.man_made","elementType":"geometry.fill","stylers":[{"visibility":"off"}]},{"featureType":"landscape.man_made","elementType":"geometry.stroke","stylers":[{"lightness":"25"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"color":"#97b771"}]},{"featureType":"poi","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#7B8758"}]},{"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#EBF4A4"}]},{"featureType":"poi.attraction","elementType":"labels","stylers":[{"visibility":"on"}]},{"featureType":"poi.business","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"poi.government","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"visibility":"simplified"},{"color":"#8dab68"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"visibility":"simplified"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#5B5B3F"}]},{"featureType":"road","elementType":"labels.text.stroke","stylers":[{"color":"#ABCE83"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#EBF4A4"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#9BBF72"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#A4C67D"}]},{"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"geometry","stylers":[{"visibility":"on"},{"color":"#aee2e0"}]}]
+                //     };
+                //
+                //     // Get the HTML DOM element that will contain your map
+                //     // We are using a div with id="map" seen below in the <body>
+                //     var mapElement = document.getElementById('map');
+                //
+                //     // Create the Google Map using our element and options defined above
+                //     var map = new google.maps.Map(mapElement, mapOptions);
+                //
+                //     // Let's also add a marker while we're at it
+                //     var marker = new google.maps.Marker({
+                //         position: new google.maps.LatLng(48.693602, 6.180374),
+                //         map: map,
+                //         title: 'Snazzy!'
+                //     });
+                // };
+                //
+                // function onError(error) {
+                //     alert('code: '    + error.code    + '\n' +
+                //           'message: ' + error.message + '\n');
+                // }
+                //
+                // navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
 
             }
